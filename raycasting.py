@@ -18,7 +18,7 @@ class RayCasting:
             cos_a = math.cos(ray_angle)
 
 
-            # horizontals
+            # Horizontals
             y_hor, dy = (y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
 
             depth_hor = (y_hor - oy) / sin_a
@@ -36,7 +36,7 @@ class RayCasting:
                 y_hor += dy
                 depth_hor += delta_depth
 
-            # verticals
+            # Verticals
             x_vert, dx = (x_map + 1, 1) if cos_a > 0 else (x_map - 1e-6, -1)
 
             depth_vert = (x_vert - ox) / cos_a
@@ -46,33 +46,31 @@ class RayCasting:
             dy = delta_depth * sin_a
 
             for i in range(MAX_DEPTH):
+
                 tile_vert = int(x_vert), int(y_vert)
+
                 if tile_vert in self.game.map.world_map:
                     texture_vert = self.game.map.world_map[tile_vert]
                     break
+
                 x_vert += dx
                 y_vert += dy
                 depth_vert += delta_depth
 
 
-            # depth
+            # Depth
             if depth_vert < depth_hor:
                 depth = depth_vert
             else:
                 depth = depth_hor
-            """
-            # draw for debug
-            pg.draw.line(self.game.screen, 'yellow', (100 * ox, 100* oy),
-                         (100 * ox + 100 * depth * cos_a, 100 * oy + 100 * depth * sin_a), 2)
-            """
 
-            # remove fishbowl effect
+            # Remove fishbowl effect of the walls
             depth *= math.cos(self.game.player.angle - ray_angle)
 
-            #projection
+            # Projection
             proj_height = SCREEN_DIST / (depth + 0.0001)
 
-            # draw walls
+            # Draw the walls
             color = [255 / (1 + depth ** 5 * 0.0002)] * 3
             pg.draw.rect(self.game.screen, color,
                          (ray * SCALE, HALD_HEIGHT - proj_height // 2, SCALE, proj_height))
